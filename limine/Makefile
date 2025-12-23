@@ -3,8 +3,12 @@ STRIP ?= strip
 INSTALL ?= ./install-sh
 
 PREFIX ?= /usr/local
-
-CFLAGS ?= -g -O2 -pipe
+CFLAGS = -Wall -Wextra -std=c11 -ffreestanding \
+         -fno-stack-protector -fno-stack-check -fno-lto -fno-PIE \
+         -m64 -march=x86-64 \
+         -mno-80387 -mno-mmx -mno-sse -mno-sse2 -mno-red-zone \
+         -mcmodel=kernel \
+         -Iinclude
 
 .PHONY: all
 all: limine
