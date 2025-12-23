@@ -1,6 +1,6 @@
 CC = gcc
 LD = ld
-
+OBJ = src/kernel/main.o src/kernel/serial.o
 # Bayrakları temizleyelim ve düzene sokalım
 CFLAGS = -Wall -Wextra -std=c11 -ffreestanding \
          -fno-stack-protector -fno-stack-check -fno-lto -fno-pie \
@@ -14,13 +14,16 @@ CFLAGS = -Wall -Wextra -std=c11 -ffreestanding \
 LDFLAGS = -nostdlib -static -m elf_x86_64 -z max-page-size=0x1000 \
           -T linker.ld --no-warn-rwx-segments
 
+		  
+
 all: nova.iso
 
 src/kernel/main.o: src/kernel/main.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-kernel.elf: src/kernel/main.o
-	$(LD) $(LDFLAGS) src/kernel/main.o -o kernel.elf
+kernel.elf: $(OBJ)
+	ld $(LDFLAGS) $(OBJ) -o kernel.elf
+# ^-- Burası mutlaka 1 adet TAB karakteri olmalı, boşluk değil!
 
 nova.iso: kernel.elf limine.cfg
 	rm -rf iso_root
@@ -36,7 +39,7 @@ nova.iso: kernel.elf limine.cfg
 	./limine/limine bios-install nova.iso
 
 run: nova.iso
-	qemu-system-x86_64 -cdrom nova.iso -m 512M
+	qemu-system-x86_64 -cdrom nova.iso -serial stdio
 
 clean:
 	rm -f nova.iso kernel.elf src/kernel/main.o
