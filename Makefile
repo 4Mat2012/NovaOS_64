@@ -39,7 +39,7 @@ nova.iso: kernel.elf limine.cfg
 	./limine/limine bios-install nova.iso
 
 run: nova.iso
-	qemu-system-x86_64 -cdrom nova.iso -serial stdio
+	qemu-system-x86_64 -cdrom nova.iso -vga std -m 1G -vga std -global VGA.vgamem_mb=128
 
 clean:
 	rm -f nova.iso kernel.elf src/kernel/main.o
